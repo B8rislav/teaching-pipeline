@@ -10,6 +10,7 @@
 | `.claude/skills/visualize/SKILL.md` | Когда и как рисовать mermaid/SVG | `skills/visualize` + `mermaid-maker`, `svg-maker` |
 | `.claude/agents/researcher.md` | Субагент для проверки фактов (Sonnet, веб-поиск) | `agents/researcher` |
 | `.claude/hooks/md-log.mjs` | Stop-хук: зеркалит сессию в markdown-лог | `extensions/md-log` |
+| `.claude/hooks/teach-start.mjs` | При `/teach <тема>` сам создаёт лог и привязку сессии к нему | — |
 | `.claude/hooks/sr-due.mjs` | SessionStart-хук: сколько карточек пора повторить | — |
 | `.claude/skills/teach/references/cards.md` | Как писать карточки (Matuschak, Woźniak) | — |
 | `notes/<Тема> — конспект.md` | Конспект: правила по узлам карты | — |
