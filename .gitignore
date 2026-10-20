@@ -1,17 +1,12 @@
-# Привязки и состояние хука md-log — служебные, у каждой сессии свои
-sessions/.links/
+# Репозиторий — только для доработки системы обучения.
+# Игнорируется всё, кроме файлов самой системы. Учебные материалы
+# (notes/, cards/, sessions/) и настройки Obsidian живут только локально.
+/*
+!/.gitignore
+!/.gitattributes
+!/CLAUDE.md
+!/README.md
+!/.claude/
 
-# Obsidian: раскладка окон меняется постоянно
-.obsidian/workspace*.json
-# Код плагинов ставится из Obsidian; храним только их настройки (data.json)
-.obsidian/plugins/*/*
-!.obsidian/plugins/*/data.json
-.trash/
-
-# Claude Code: личные настройки машины
-.claude/settings.local.json
-
-# ОС
-.DS_Store
-Thumbs.db
-desktop.ini
+# Внутри .claude — тоже не всё
+/.claude/settings.local.json
