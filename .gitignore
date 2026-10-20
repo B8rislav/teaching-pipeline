@@ -1,0 +1,17 @@
+# Привязки и состояние хука md-log — служебные, у каждой сессии свои
+sessions/.links/
+
+# Obsidian: раскладка окон меняется постоянно
+.obsidian/workspace*.json
+# Код плагинов ставится из Obsidian; храним только их настройки (data.json)
+.obsidian/plugins/*/*
+!.obsidian/plugins/*/data.json
+.trash/
+
+# Claude Code: личные настройки машины
+.claude/settings.local.json
+
+# ОС
+.DS_Store
+Thumbs.db
+desktop.ini
