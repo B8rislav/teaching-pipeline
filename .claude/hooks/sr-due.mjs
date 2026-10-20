@@ -155,10 +155,43 @@ function parseFile(file) {
   return cards;
 }
 
+// ─── Модель ученика: заметки узлов (type: узел) ──────────────────────────────
+
+function parseNode(file) {
+  const text = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+  if (!text.startsWith("---\n")) return null;
+  const end = text.indexOf("\n---", 4);
+  if (end < 0) return null;
+  const fm = text.slice(4, end).split("\n");
+  const get = (k) =>
+    fm.find((l) => l.startsWith(`${k}:`))?.slice(k.length + 1).trim().replace(/^["']|["']$/g, "");
+  if (get("type") !== "узел") return null;
+  const mi = fm.findIndex((l) => l.startsWith("misconceptions:"));
+  const misconceptions = [];
+  for (let j = mi + 1; mi >= 0 && j < fm.length && /^\s+-\s/.test(fm[j]); j++) {
+    misconceptions.push(fm[j].replace(/^\s+-\s*/, "").replace(/^["']|["']$/g, ""));
+  }
+  return {
+    file: path.relative(ROOT, file).replace(/\\/g, "/"),
+    name: path.basename(file, ".md"),
+    topic: get("topic") ?? "",
+    status: get("status") ?? "new",
+    next: get("next_review") || null,
+    attempts: Number(get("attempts")) || 0,
+    correct: Number(get("correct")) || 0,
+    misconceptions,
+  };
+}
+
 // ─── Сводка ──────────────────────────────────────────────────────────────────
 
 const files = [...walk(ROOT)].filter((f) => !FILTER || f.includes(FILTER));
 const cards = files.flatMap(parseFile);
+const nodes = files.map(parseNode).filter(Boolean);
+const dueNodes = nodes
+  .filter((n) => n.status !== "new" && n.next && n.next <= today)
+  // сначала шаткие, внутри — самые просроченные
+  .sort((a, b) => (b.status === "shaky") - (a.status === "shaky") || a.next.localeCompare(b.next));
 
 const byFile = new Map();
 const dueList = [];
@@ -184,10 +217,10 @@ const sum = (k) => stats.reduce((a, s) => a + s[k], 0);
 const totals = { today, cards: sum("total"), due: sum("due"), new: sum("new"), hard: sum("hard") };
 
 if (MODE === "json") {
-  console.log(JSON.stringify({ totals, files: stats, due: dueList, hard: hardList }, null, 2));
+  console.log(JSON.stringify({ totals, files: stats, due: dueList, hard: hardList, nodes, dueNodes }, null, 2));
   process.exit(0);
 }
-if (MODE === "hook" && !totals.cards) process.exit(0);
+if (MODE === "hook" && !totals.cards && !nodes.length) process.exit(0);
 
 const out = [];
 out.push(`Интервальное повторение на ${today} (скрипт .claude/hooks/sr-due.mjs):`);
@@ -204,10 +237,22 @@ const list = (title, arr) => {
 };
 list("Пора повторить:", dueList);
 list("Трудные (ученик на них спотыкался):", hardList);
+if (nodes.length) {
+  out.push(`Модель ученика: узлов ${nodes.length}, к проверке сегодня ${dueNodes.length}.`);
+  for (const n of dueNodes.slice(0, LIST_LIMIT)) {
+    const rate = n.attempts ? `${n.correct}/${n.attempts}` : "не мерили";
+    const mis = n.misconceptions.length ? `; заблуждения: ${n.misconceptions.join(" | ")}` : "";
+    out.push(`  · ${n.file} — ${n.status}, ${rate}, срок ${n.next}${mis}`);
+  }
+  if (dueNodes.length > LIST_LIMIT) out.push(`  · …и ещё ${dueNodes.length - LIST_LIMIT}`);
+}
 if (MODE === "hook") {
+  const todo = [];
+  if (totals.due + totals.new) todo.push("отправь ученика повторить карточки в Obsidian");
+  if (dueNodes.length) todo.push("проведи разминку по узлам к проверке");
   out.push(
-    totals.due + totals.new
-      ? "Перед уроком — фаза 0 скилла teach: отправь ученика повторить карточки в Obsidian."
+    todo.length
+      ? `Перед уроком — фаза 0 скилла teach: ${todo.join(", затем ")}.`
       : "Всё повторено, можно сразу к уроку.",
   );
 }
