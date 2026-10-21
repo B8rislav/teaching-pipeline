@@ -1,12 +1,10 @@
-# Модель ученика: по строке на узел карты (заметки model/<Тема>/<Узел>.md).
-# Уровень — доля верных проверок, пороги как в RoundTable02/tutor-skills.
 filters:
   and:
     - file.inFolder("model")
-    - 'type == "узел"'
+    - type == "узел"
 formulas:
-  rate: 'if(attempts > 0, (correct / attempts * 100).round() + "%", "—")'
-  level: 'if(attempts > 0, if(correct / attempts < 0.4, "🟥", if(correct / attempts < 0.7, "🟨", if(correct / attempts < 0.9, "🟩", "🟦"))), "⬜")'
+  rate: if(attempts > 0, (correct / attempts * 100).round() + "%", "—")
+  level: if(attempts > 0, if(correct / attempts < 0.4, "🟥", if(correct / attempts < 0.7, "🟨", if(correct / attempts < 0.9, "🟩", "🟦"))), "⬜")
 properties:
   file.name:
     displayName: Узел
@@ -29,8 +27,8 @@ views:
     name: Повторить сегодня
     filters:
       and:
-        - 'status != "new"'
-        - 'next_review <= today()'
+        - status != "new"
+        - next_review <= today()
     groupBy:
       property: topic
       direction: ASC
