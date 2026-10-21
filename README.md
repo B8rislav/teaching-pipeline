@@ -1,5 +1,7 @@
 # learn — система обучения с ИИ в Claude Code
 
+> **EN:** A Russian-language port of [amosblomqvist/learn](https://github.com/amosblomqvist/learn) from pi to Claude Code. `/teach <topic>` runs a tutoring session: placement quizzes, a dependency map, node-by-node lessons, and an Obsidian vault with notes, spaced-repetition cards and a learner model. All prompts are in Russian; translate `.claude/skills/` and `CLAUDE.md` to use it in another language.
+
 Порт [amosblomqvist/learn](https://github.com/amosblomqvist/learn) (видео Eero Alvar «How I Use AI to Learn Things») с pi на Claude Code. Работает на Windows без WSL и tmux.
 
 ## Что внутри
@@ -25,10 +27,15 @@
 
 ## Установка
 
-1. Нужны Claude Code и Node.js (для хука; подойдёт 18+).
-2. Открой эту папку в Obsidian как хранилище: *Open folder as vault*.
-3. В Obsidian: *Settings → Community plugins* → выключи *Restricted mode* → *Browse* → **Spaced Repetition** (автор st3v3nmw) → *Install* → *Enable*. Настройки по умолчанию подходят.
-4. В терминале: `cd` в эту папку и `claude`.
+1. Нужны [Claude Code](https://claude.com/claude-code), Node.js 18+ (на нём работают хуки) и [Obsidian](https://obsidian.md).
+2. Склонируй репозиторий: `git clone <url> learn`.
+3. Открой папку `learn` в Obsidian как хранилище: *Open folder as vault*.
+4. В Obsidian: *Settings → Community plugins* → выключи *Restricted mode* → *Browse* → **Spaced Repetition** (автор st3v3nmw) → *Install* → *Enable*. Настройки по умолчанию подходят.
+5. В терминале: `cd learn` и `claude`. При первом запуске Claude Code спросит, доверяешь ли ты папке: хуки из `.claude/settings.json` заработают только после согласия.
+
+Папки `notes/`, `cards/`, `model/` и `sessions/` в репозиторий не входят: они появятся сами на первом уроке. `.gitignore` пропускает в git только файлы системы, поэтому твои учебные материалы останутся локальными, даже если ты сделаешь форк и будешь пушить доработки.
+
+`.claude/settings.json` заранее разрешает `WebSearch`, `WebFetch` на любой домен (это нужно субагенту researcher) и правку файлов в `sessions/`. Если такие права не нужны, убери их оттуда — Claude будет спрашивать каждый раз.
 
 ## Как учиться
 
@@ -56,3 +63,7 @@ Claude создаст лог `sessions/<дата>-<тема>.md` и скажет
 ## Под себя
 
 Скилл `teach` написан под одного ученика — правь его как хочешь. Например, поменяй язык или поведение по умолчанию (сократический или повествовательный режим).
+
+## Лицензия
+
+[MIT](LICENSE) — на код и тексты этого порта. Идеи, структура и тексты оригинала принадлежат автору [amosblomqvist/learn](https://github.com/amosblomqvist/learn); у оригинала лицензии нет.
